@@ -58,23 +58,37 @@ private AuthResponse response;
                 response.setMessage("Invalid Credentials");
             }
         }
-        response.setMessage("User not found");
+        else{
+            response.setMessage("User not found");
+        }
+
         return response;
     }
 
-    public String findById(Long id){
+    public User findById(Long id) throws UserException{
         User user=repo.findById(id).orElse(null);
-        if(user!=null){return user.toString();}else{return "User not found"; }
+        if(user!=null){
+            return user;
+        }
+        else{
+            throw new UserException("User not found with id:"+id);
+        }
     }
 
-    public String findByEmail(String email){
-        User user = repo.findByEmail(email).orElse(null);
-        if(user!=null){return user.toString();}else{return "User not found"; }
+    public User findByEmail(String email) throws UserException{
+        User user=repo.findByEmail(email).orElse(null);
+        if(user!=null){
+            return user;
+        }
+        else{
+            throw new UserException("User not found with email:"+email);
+        }
+
     }
 
-    public String findByJWT(String jwt){
-        User user=repo.findByEmail(jwtService.extractEmail(jwt)).orElse(null);
-        if(user!=null){return user.toString();}else{return "User not found"; }
+    public User findByJWT(String jwt) throws UserException{
+        String email=jwtService.extractEmail(jwt);
+        return findByEmail(email);
     }
 
 //    public String updateUser(User user){

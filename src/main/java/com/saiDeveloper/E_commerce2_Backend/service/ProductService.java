@@ -2,7 +2,10 @@ package com.saiDeveloper.E_commerce2_Backend.service;
 
 import com.saiDeveloper.E_commerce2_Backend.exception.ProductException;
 import com.saiDeveloper.E_commerce2_Backend.model.Product;
+import com.saiDeveloper.E_commerce2_Backend.repo.CategoryRepo;
+import com.saiDeveloper.E_commerce2_Backend.repo.ProductRepo;
 import com.saiDeveloper.E_commerce2_Backend.request.createProductRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 
 import java.util.List;

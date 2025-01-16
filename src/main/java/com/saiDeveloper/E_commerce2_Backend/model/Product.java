@@ -33,6 +33,9 @@ public class Product {
     @Column(name = "discounted_price")
     private int discountedPrice;
 
+    @Column(name = "discount_percentage")
+    private int discountPercentage;
+
     private int quantity;
     private String brand;
     private String color;
