@@ -2,6 +2,7 @@ package com.saiDeveloper.E_commerce2_Backend.controller;
 
 import com.saiDeveloper.E_commerce2_Backend.model.User;
 import com.saiDeveloper.E_commerce2_Backend.response.AuthResponse;
+import com.saiDeveloper.E_commerce2_Backend.service.CartService;
 import com.saiDeveloper.E_commerce2_Backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +16,7 @@ public class AuthController {
 
     @Autowired
     private UserService service;
+
     @PostMapping("/register")
     public AuthResponse register(@RequestBody User user){
         return service.saveUser(user);

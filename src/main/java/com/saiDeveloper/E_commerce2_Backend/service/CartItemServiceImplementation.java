@@ -25,7 +25,7 @@ public class CartItemServiceImplementation implements CartItemService{
     @Override
     public CartItem createCartItem(CartItem cartItem) {
 
-        cartItem.setQuantity(1); //by default cartItem quantity is 1
+        if(cartItem.getQuantity()==0){cartItem.setQuantity(1);}//by default cartItem quantity is 1
         cartItem.setPrice(cartItem.getProduct().getPrice()*cartItem.getQuantity());
         cartItem.setDiscountedPrice(cartItem.getProduct().getDiscountedPrice()*cartItem.getQuantity());
 
@@ -59,7 +59,17 @@ public class CartItemServiceImplementation implements CartItemService{
 
     @Override
     public void removeCartItem(Long userId, Long id) throws CartItemException, UserException {
+        CartItem cartItem = findCartItemById(id);
 
+        User user = userService.findById(cartItem.getUserId());
+
+        if(user.getId().equals(userId)){
+            repo.deleteById(id);
+        }
+
+        else{
+            throw new UserException("You can't remove other Users items");
+        }
     }
 
     @Override
@@ -71,3 +81,22 @@ public class CartItemServiceImplementation implements CartItemService{
         throw new CartItemException("Cart Item not found with id:"+id);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

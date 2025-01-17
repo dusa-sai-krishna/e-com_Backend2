@@ -1,5 +1,6 @@
 package com.saiDeveloper.E_commerce2_Backend.service;
 
+import com.saiDeveloper.E_commerce2_Backend.exception.CartItemException;
 import com.saiDeveloper.E_commerce2_Backend.exception.ProductException;
 import com.saiDeveloper.E_commerce2_Backend.model.Cart;
 import com.saiDeveloper.E_commerce2_Backend.model.User;
@@ -9,7 +10,7 @@ public interface CartService {
 
     public Cart createCart(User user);
 
-    public String addCartItem(Long userId, AddItemRequest req) throws ProductException;
+    public String addCartItem(Long userId, AddItemRequest req) throws ProductException, CartItemException;
 
     public Cart findUserCart(Long userId);
 

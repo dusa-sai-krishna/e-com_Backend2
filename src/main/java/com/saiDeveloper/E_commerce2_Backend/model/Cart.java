@@ -30,10 +30,10 @@ public class Cart {
     private Set<CartItem> cartItems = new HashSet<>();
 
     @Column(name = "total_price")
-    private double totalPrice;
+    private Integer totalPrice;
 
     @Column(name = "total_item")
-    private Integer totalItem;
+    private Integer totalItems;
 
     @Column(name = "total_discounted_price")
     private Integer totalDiscountedPrice;

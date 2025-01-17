@@ -22,8 +22,10 @@ public class UserService {
     private AuthenticationManager manager;
     @Autowired
     private JwtService jwtService;
-@Autowired
-private AuthResponse response;
+    @Autowired
+    private CartService cartService;
+    @Autowired
+    private AuthResponse response;
 
     public AuthResponse saveUser(User user){
 
@@ -38,6 +40,7 @@ private AuthResponse response;
             System.out.println(user.getPassword());
             repo.save(user);
             response.setMessage("User registered successfully");
+            cartService.createCart(user);// when user is registered, create an associated cart too.
 
         }
         return response;
@@ -91,16 +94,14 @@ private AuthResponse response;
         return findByEmail(email);
     }
 
-//    public String updateUser(User user){
-//        User oldUser = repo.findByEmail(user.getEmail()).orElse(null);
-//        if(oldUser!=null){
-//            user.setId(oldUser.getId());
-//            repo.save(user);
-//            return user.toString();
-//        }else{
-//           return "User not found";
-//        }
-//    }
+    public User updateUser(User user) throws UserException{
+        if(repo.findByEmail(user.getEmail()).isPresent()){
+             return repo.save(user);
+        }
+        else{
+            throw new UserException("User to be updated not found with id:"+user.getId());
+        }
+    }
 
     public String deleteUser(User user){
         if(repo.findByEmail(user.getEmail()).isPresent()){

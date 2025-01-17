@@ -3,38 +3,13 @@ package com.saiDeveloper.E_commerce2_Backend.request;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.stereotype.Component;
 
-@Component
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class AddItemRequest {
+@NoArgsConstructor
+public class ReviewRequest {
 
     private Long productId;
-    private String size;
-    private Integer quantity;
-
-
+    private String review;
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
