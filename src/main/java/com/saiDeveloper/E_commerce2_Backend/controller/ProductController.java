@@ -3,6 +3,7 @@ package com.saiDeveloper.E_commerce2_Backend.controller;
 import com.saiDeveloper.E_commerce2_Backend.exception.ProductException;
 import com.saiDeveloper.E_commerce2_Backend.model.Product;
 import com.saiDeveloper.E_commerce2_Backend.service.ProductService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import java.util.List;
 
 @RequestMapping("/api")
 @RestController
+@Tag(name = "Product", description = "Product APIs")
 public class ProductController {
 
     @Autowired

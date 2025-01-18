@@ -14,7 +14,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "order")
+@Table(name = "orders") // order is a reserved keyword in SQL. Can't be a table name
 @Entity
 @Scope("prototype")
 public class Order {
@@ -29,8 +29,8 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne
-    @Column(name = "order_items")
+    @OneToMany
+    @PrimaryKeyJoinColumn(name = "order_items")
     private List<OrderItem> orderItems = new ArrayList<>();
 
     @Column(name = "order_date")
@@ -40,12 +40,12 @@ public class Order {
     private LocalDateTime deliveryDate;
 
     @OneToOne
-    @Column(name = "shipping_address")
+    @PrimaryKeyJoinColumn(name = "shipping_address")
     private Address shippingAddress;
 
     @Embedded
-    @ElementCollection
-    @CollectionTable(name = "payment_details", joinColumns = @JoinColumn(name = "order_id"))
+//    @ElementCollection
+//    @CollectionTable(name = "payment_details", joinColumns = @JoinColumn(name = "order_id"))
     private PaymentDetails paymentDetails;
 
     @Column(name = "total_price")

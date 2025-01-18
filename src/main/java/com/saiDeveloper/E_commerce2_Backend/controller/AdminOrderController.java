@@ -4,6 +4,7 @@ import com.saiDeveloper.E_commerce2_Backend.exception.OrderException;
 import com.saiDeveloper.E_commerce2_Backend.model.Order;
 import com.saiDeveloper.E_commerce2_Backend.response.ApiResponse;
 import com.saiDeveloper.E_commerce2_Backend.service.OrderService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @RequestMapping("/api/admin/orders")
 @RestController
+@Tag(name = "Admin")
 public class AdminOrderController {
 
     @Autowired

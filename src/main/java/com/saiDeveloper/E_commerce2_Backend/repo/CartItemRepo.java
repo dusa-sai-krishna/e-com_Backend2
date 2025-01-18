@@ -16,8 +16,8 @@ public interface CartItemRepo extends JpaRepository<CartItem,Long> {
 
 
     @Query("Select ci From CartItem ci " +
-            "Where ci.cart = :cart And ci.product = :product" +
-            "And ci.size = :size And ci.userId = :userId")
+            " Where ci.cart = :cart And ci.product = :product" +
+            " And ci.size = :size And ci.userId = :userId")
     public Optional<CartItem> isCartItemExist(
             @Param("cart") Cart cart,
             @Param("product")Product product,

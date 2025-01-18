@@ -9,6 +9,8 @@ import com.saiDeveloper.E_commerce2_Backend.response.ApiResponse;
 import com.saiDeveloper.E_commerce2_Backend.service.CartItemService;
 import com.saiDeveloper.E_commerce2_Backend.service.CartService;
 import com.saiDeveloper.E_commerce2_Backend.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/cartItem")
+@Tag(name = "Cart", description = "Cart Item Controller")
 public class CartItemController {
 
     @Autowired
@@ -26,8 +29,14 @@ public class CartItemController {
     @Autowired
     private CartService cartService;
     @DeleteMapping("/{cartItemId}")
-    @io.swagger.v3.oas.annotations.Operation(summary = "Delete cart item")
-    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Cart item deleted successfully")
+    @Operation(
+            summary = "Delete cart item based on CartItemId",
+            description = "Delete cart item based on CartItemId. It finds the user through JWT and if all happend well, returns OK response",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Cart item deleted successfully"),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Cart item not found")
+            }
+    )
     public ResponseEntity<ApiResponse> deleteCartItem(
             @PathVariable Long cartItemId,
             @RequestHeader("Authorization") String jwt) throws UserException, CartItemException {
@@ -45,8 +54,7 @@ public class CartItemController {
     @Operation(summary = "Add item to cart", description = "Add an item to the cart")
     public ResponseEntity<ApiResponse> addItemToCart(
             @RequestBody AddItemRequest req,
-            @RequestHeader("Authorization") String jwt) throws UserException, ProductException
-            {
+            @RequestHeader("Authorization") String jwt) throws UserException, ProductException, CartItemException {
                 User user = userService.findByJWT(jwt);
 
                 cartService.addCartItem(user.getId(), req);

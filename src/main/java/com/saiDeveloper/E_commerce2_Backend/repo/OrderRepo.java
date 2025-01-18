@@ -13,7 +13,7 @@ public interface OrderRepo extends JpaRepository<Order,Long> {
 
 
     @Query("SELECT o FROM Order o WHERE o.user.id = :userId" +
-            "And (o.orderStatus IN ('PLACED','CONFIRMED','SHIPPED', 'DELIVERED'))")
+            " And (o.orderStatus IN ('PLACED','CONFIRMED','SHIPPED', 'DELIVERED'))")
 
     public List<Order> getAllOrdersByUserId(@Param("userId") Long userId);
 
