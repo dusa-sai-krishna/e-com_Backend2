@@ -39,7 +39,7 @@ public class RatingServiceImplementation implements RatingService {
 
     @Override
     public List<Rating> getAllRatings(Long productId) throws ProductException {
-        Product product = productService.findProductById(productId); //checks whether product exists or not
+        productService.findProductById(productId);//checks whether product exists or not
         return repo.getAllRatings(productId);
     }
 }

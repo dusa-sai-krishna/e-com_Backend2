@@ -8,8 +8,6 @@ import com.saiDeveloper.E_commerce2_Backend.request.ReviewRequest;
 import java.util.List;
 
 public interface ReviewService {
-
-    public Review createReview(ReviewRequest req, User user) throws ProductException;
-
-    public List<Review> getAllReviews(Long productId);
+    Review createReview(ReviewRequest req, User user) throws ProductException;
+    List<Review> getAllReviews(Long productId);
 }

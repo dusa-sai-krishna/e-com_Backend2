@@ -31,7 +31,7 @@ public class CartItemController {
     @DeleteMapping("/{cartItemId}")
     @Operation(
             summary = "Delete cart item based on CartItemId",
-            description = "Delete cart item based on CartItemId. It finds the user through JWT and if all happend well, returns OK response",
+            description = "Delete cart item based on CartItemId. It finds the user through JWT and if all happened well, returns OK response",
             responses = {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Cart item deleted successfully"),
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Cart item not found")
@@ -46,7 +46,7 @@ public class CartItemController {
         ApiResponse response = new ApiResponse();
         response.setMessage("Cart item deleted successfully");
         response.setStatus(true);
-        return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 
@@ -61,7 +61,7 @@ public class CartItemController {
                 ApiResponse response = new ApiResponse();
                 response.setMessage("Item added to cart successfully");
                 response.setStatus(true);
-                return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
+                return new ResponseEntity<>(response, HttpStatus.OK);
             }
 
 

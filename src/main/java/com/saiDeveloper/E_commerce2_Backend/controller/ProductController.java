@@ -2,16 +2,14 @@ package com.saiDeveloper.E_commerce2_Backend.controller;
 
 import com.saiDeveloper.E_commerce2_Backend.exception.ProductException;
 import com.saiDeveloper.E_commerce2_Backend.model.Product;
+import com.saiDeveloper.E_commerce2_Backend.request.createProductRequest;
 import com.saiDeveloper.E_commerce2_Backend.service.ProductService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -79,21 +77,34 @@ public class ProductController {
 // *//
     @GetMapping("/products")
     public ResponseEntity<Page<Product>> findProductByCategoryHandler(
-            String category,
-            List<String> color,
-            List<String> size,
-            Integer minPrice,
-            Integer maxPrice,
-            Integer minDiscount,
-            String sort,
-            String stock,
-            Integer pageNumber,
-            Integer pageSize
+            @RequestParam("category") String category,
+           @RequestParam("color") List<String> color,
+           @RequestParam("size") List<String> size,
+           @RequestParam("minPrice") Integer minPrice,
+           @RequestParam("maxPrice") Integer maxPrice,
+           @RequestParam("minDiscount") Integer minDiscount,
+           @RequestParam("sort") String sort,
+           @RequestParam("stock") String stock,
+           @RequestParam("pageNumber") Integer pageNumber,
+           @RequestParam("pageSize") Integer pageSize
     ) throws ProductException {
+
+        System.out.println(category);
+        System.out.println(color);
+        System.out.println(size);
+        System.out.println(minPrice);
+        System.out.println(maxPrice);
+        System.out.println(minDiscount);
+        System.out.println(sort);
+        System.out.println(stock);
+        System.out.println(pageNumber);
+        System.out.println(pageSize);
+
         Page<Product> res = productService.getAllProduct(
                 category, color, size, minPrice, maxPrice,
                 minDiscount, sort, stock, pageNumber, pageSize);
-        System.out.println("Complete Products");
+
+
         return new ResponseEntity<>(res, HttpStatus.ACCEPTED);
     }
 
@@ -102,6 +113,14 @@ public class ProductController {
         Product res = productService.findProductById(productId);
         return new ResponseEntity<>(res, HttpStatus.ACCEPTED);
     }
+
+   @PostMapping("/products")
+   public ResponseEntity<Product> createProductHandler(@RequestBody createProductRequest req) throws ProductException {
+        Product res = productService.createProduct(req);
+
+        return new ResponseEntity<>(res, HttpStatus.CREATED);
+    }
+
 
 
 

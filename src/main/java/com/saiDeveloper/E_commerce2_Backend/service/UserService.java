@@ -1,5 +1,7 @@
 package com.saiDeveloper.E_commerce2_Backend.service;
 
+import com.saiDeveloper.E_commerce2_Backend.request.UserLoginRequest;
+import com.saiDeveloper.E_commerce2_Backend.request.UserRegisterRequest;
 import com.saiDeveloper.E_commerce2_Backend.exception.UserException;
 import com.saiDeveloper.E_commerce2_Backend.model.User;
 import com.saiDeveloper.E_commerce2_Backend.repo.UserRepo;
@@ -8,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,15 +30,21 @@ public class UserService {
     @Autowired
     private AuthResponse response;
 
-    public AuthResponse saveUser(User user){
+    public AuthResponse saveUser(UserRegisterRequest req) throws UserException {
 
-        if(repo.findByEmail(user.getEmail()).isPresent()){
-            response.setMessage("User already exists");
+        if(repo.findByEmail(req.getEmail()).isPresent()){
+            throw new UserException("User already exists with email:"+req.getEmail());
 
         }
         else {
 
-            user.setPassword(encoder.encode(user.getPassword()));
+            User user = new User();
+            user.setFirstName(req.getFirstName());
+            user.setLastName(req.getLastName());
+            user.setEmail(req.getEmail());
+            user.setMobile(req.getMobile());
+
+            user.setPassword(encoder.encode(req.getPassword()));
             //For verification only
             System.out.println(user.getPassword());
             repo.save(user);
@@ -46,24 +55,22 @@ public class UserService {
         return response;
     }
 
-    public AuthResponse login(User user){
+    public AuthResponse login(UserLoginRequest req) throws UserException {
 
-        if(repo.findByEmail(user.getEmail()).orElse(null)!=null){
+        findByEmail(req.getEmail()); //throws exception if user not found
 
+        try {
             Authentication authentication = manager
-                    .authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(),user.getPassword()));
+                    .authenticate(new UsernamePasswordAuthenticationToken(req.getEmail(),req.getPassword()));
 
             if (authentication.isAuthenticated()) {
-                response.setJwt(jwtService.generateToken(user.getEmail()));
+                response.setJwt(jwtService.generateToken(req.getEmail()));
                 response.setMessage("Login successful");
             }
-            else {
-                response.setMessage("Invalid Credentials");
-            }
+        } catch (AuthenticationException e) {
+            throw new UserException("Invalid Password");
         }
-        else{
-            response.setMessage("User not found");
-        }
+
 
         return response;
     }

@@ -6,12 +6,13 @@ import com.saiDeveloper.E_commerce2_Backend.model.Cart;
 import com.saiDeveloper.E_commerce2_Backend.model.User;
 import com.saiDeveloper.E_commerce2_Backend.request.AddItemRequest;
 
+
 public interface CartService {
 
-    public Cart createCart(User user);
+    Cart createCart(User user);
 
-    public String addCartItem(Long userId, AddItemRequest req) throws ProductException, CartItemException;
+    String addCartItem(Long userId, AddItemRequest req) throws ProductException, CartItemException;
 
-    public Cart findUserCart(Long userId);
+    Cart findUserCart(Long userId);
 
 }

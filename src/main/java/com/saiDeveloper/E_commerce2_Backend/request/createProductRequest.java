@@ -13,6 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Component
+
 public class createProductRequest {
 
     private String title;

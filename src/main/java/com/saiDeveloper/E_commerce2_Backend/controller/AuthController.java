@@ -1,10 +1,8 @@
 package com.saiDeveloper.E_commerce2_Backend.controller;
-
-import com.saiDeveloper.E_commerce2_Backend.dto.UserLoginDTO;
+import com.saiDeveloper.E_commerce2_Backend.request.UserLoginRequest;
+import com.saiDeveloper.E_commerce2_Backend.request.UserRegisterRequest;
 import com.saiDeveloper.E_commerce2_Backend.exception.UserException;
-import com.saiDeveloper.E_commerce2_Backend.model.User;
 import com.saiDeveloper.E_commerce2_Backend.response.AuthResponse;
-import com.saiDeveloper.E_commerce2_Backend.service.CartService;
 import com.saiDeveloper.E_commerce2_Backend.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +20,12 @@ public class AuthController {
     private UserService service;
 
     @PostMapping("/register")
-    public AuthResponse register(@RequestBody User user){
+    public AuthResponse register(@RequestBody UserRegisterRequest user) throws UserException {
         return service.saveUser(user);
     }
 
     @PostMapping("/login")
-    public AuthResponse login(@RequestBody UserLoginDTO user) throws UserException {
-
-        return service.login(service.findByEmail(user.getEmail()));
+    public AuthResponse login(@RequestBody UserLoginRequest user) throws UserException {
+        return service.login(user);
     }
 }

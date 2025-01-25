@@ -1,8 +1,6 @@
 package com.saiDeveloper.E_commerce2_Backend.service;
 
-import com.saiDeveloper.E_commerce2_Backend.exception.CartItemException;
 import com.saiDeveloper.E_commerce2_Backend.exception.ProductException;
-import com.saiDeveloper.E_commerce2_Backend.exception.UserException;
 import com.saiDeveloper.E_commerce2_Backend.model.Cart;
 import com.saiDeveloper.E_commerce2_Backend.model.CartItem;
 import com.saiDeveloper.E_commerce2_Backend.model.Product;
@@ -30,6 +28,7 @@ public class CartServiceImplementation implements CartService{
         cart.setUser(user);
         return repo.save(cart);
     }
+
 
     @Override
     public String addCartItem(Long userId, AddItemRequest req) throws ProductException {

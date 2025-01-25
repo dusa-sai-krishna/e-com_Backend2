@@ -2,9 +2,11 @@ package com.saiDeveloper.E_commerce2_Backend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 
 import java.time.LocalDateTime;
@@ -21,19 +23,26 @@ public class User {
 
 @Id
 @GeneratedValue(strategy = GenerationType.AUTO)
-@Column(name = "user_id")
+    @Column(name = "user_id")
     private Long id;
-@Column(name = "first_name")
+    @NotNull
+    @Column(name = "first_name")
     private String firstName;
-@Column(name = "last_name")
+
+    @NotNull
+    @Column(name = "last_name")
     private String lastName;
-@Column(name = "email")
+
+    @NotNull
     private String email;
-@Column(name = "password")
+
+    @NotNull
     private String password;
-@Column(name = "role")
+
+    @Column(nullable = false, columnDefinition = "varchar(255) default 'USER'")
     private String role;
-@Column(name = "mobile")
+
+    @NotNull
     private String mobile;
 //    This code snippet defines a one-to-many relationship between a `User` and multiple `Address` entities in a database.
 //

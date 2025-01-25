@@ -1,16 +1,42 @@
 package com.saiDeveloper.E_commerce2_Backend.model;
 
+import jakarta.persistence.Embeddable;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
+@Embeddable
 public class Size {
 
     private String name;
     private int quantity;
 
+    public Size() {
+    }
+
+    public Size(String name, int quantity) {
+        this.name = name;
+        this.quantity = quantity;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "Size{" +
+                "name='" + name + '\'' +
+                ", quantity=" + quantity +
+                '}';
+    }
 }
