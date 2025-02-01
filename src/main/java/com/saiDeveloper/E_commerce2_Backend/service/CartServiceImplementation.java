@@ -1,5 +1,7 @@
 package com.saiDeveloper.E_commerce2_Backend.service;
 
+import com.saiDeveloper.E_commerce2_Backend.exception.CartException;
+import com.saiDeveloper.E_commerce2_Backend.exception.CartItemException;
 import com.saiDeveloper.E_commerce2_Backend.exception.ProductException;
 import com.saiDeveloper.E_commerce2_Backend.model.Cart;
 import com.saiDeveloper.E_commerce2_Backend.model.CartItem;
@@ -7,10 +9,12 @@ import com.saiDeveloper.E_commerce2_Backend.model.Product;
 import com.saiDeveloper.E_commerce2_Backend.model.User;
 import com.saiDeveloper.E_commerce2_Backend.repo.CartRepo;
 import com.saiDeveloper.E_commerce2_Backend.request.AddItemRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class CartServiceImplementation implements CartService{
 
     @Autowired
@@ -26,21 +30,24 @@ public class CartServiceImplementation implements CartService{
         Cart cart = new Cart();
 
         cart.setUser(user);
+        log.info("Cart created successfully for user {}",user.getId());
         return repo.save(cart);
     }
 
 
     @Override
-    public String addCartItem(Long userId, AddItemRequest req) throws ProductException {
+    public String addCartItem(Long userId, AddItemRequest req) throws ProductException, CartException, CartItemException {
 
         Cart cart = repo.findByUserId(userId).orElse(null);
         if(cart!=null){
-
+            log.info("Cart found with user id:{}",userId);
             //find product
             Product product = productService.findProductById(req.getProductId());
 
             CartItem isPresent = cartItemService.isCartItemExist(cart,product,req.getSize(),userId);
+
             if(isPresent==null){
+                log.info("CartItem is not present. Creating a new one");
                 CartItem cartItem = new CartItem();
 
                 cartItem.setCart(cart);
@@ -52,11 +59,19 @@ public class CartServiceImplementation implements CartService{
                 cartItemService.createCartItem(cartItem);
                 cart.getCartItems().add(cartItem);
 
+                repo.save(cart);
+                log.info("Item added to cart successfully");
                 return "Item added to cart successfully";
             }
-            return "Item already exists in cart";
+            else {
+                log.error("Item already exists in cart");
+                throw new CartItemException("Item already exists in cart");
+            }
         }
-        return "Can't access Cart of another User";
+        else {
+            log.error("Cart not found with user id:{}",userId);
+            throw new CartException("Can't access Cart of another User");
+        }
     }
 
     /**
@@ -69,12 +84,28 @@ public class CartServiceImplementation implements CartService{
      * @return the cart associated with the given user ID, or null if no such cart exists
      */
     @Override
-    public Cart findUserCart(Long userId) {
+    public Cart findCartByUserId(Long userId) throws CartException {
 
         Cart cart = repo.findByUserId(userId).orElse(null);
 
         if(cart!=null){
+            log.info("Cart found with user id:{} and cart:{}",userId,cart);
+            return cart;
+        }
+        log.error("Cart not found with user id:{}",userId);
+            throw new CartException("Cart not found with user id:"+userId);
 
+
+    }
+
+
+
+    @Override
+    public Cart aggregateCost(Long userId){
+        Cart cart = repo.findByUserId(userId).orElse(null);
+
+        if(cart!=null){
+            log.info("Process of identifying total price and items has started for the cart with id:{}",cart.getId());
             int totalPrice = 0;
             int totalDiscountedPrice = 0;
             int totalItem = 0;
@@ -88,10 +119,12 @@ public class CartServiceImplementation implements CartService{
             cart.setTotalItems(totalItem);
             cart.setTotalDiscountedPrice(totalDiscountedPrice);
             cart.setDiscount(cart.getTotalPrice()-cart.getTotalDiscountedPrice());
+            log.info("Process of identifying total price and items has completed for the cart with id:{}",cart.getId());
         }
 
         return cart;
     }
+
 }
 
 

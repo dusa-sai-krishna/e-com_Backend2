@@ -6,6 +6,7 @@ import com.saiDeveloper.E_commerce2_Backend.model.Review;
 import com.saiDeveloper.E_commerce2_Backend.model.User;
 import com.saiDeveloper.E_commerce2_Backend.repo.ReviewRepo;
 import com.saiDeveloper.E_commerce2_Backend.request.ReviewRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@Slf4j
 public class ReviewServiceImplementation implements ReviewService {
 
     @Autowired
@@ -33,12 +35,13 @@ public class ReviewServiceImplementation implements ReviewService {
         review.setCreatedAt(LocalDateTime.now());
 
         repo.save(review);
-
+        log.info("Review created successfully with id:{}",review.getId());
         return review;
     }
 
     @Override
     public List<Review> getAllReviews(Long productId) {
+        log.info("Getting all reviews for product with id:{}",productId);
         return repo.getAllReviews(productId);
     }
 }

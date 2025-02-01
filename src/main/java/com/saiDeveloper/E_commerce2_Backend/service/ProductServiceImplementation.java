@@ -5,6 +5,7 @@ import com.saiDeveloper.E_commerce2_Backend.model.Category;
 import com.saiDeveloper.E_commerce2_Backend.model.Product;
 import com.saiDeveloper.E_commerce2_Backend.repo.CategoryRepo;
 import com.saiDeveloper.E_commerce2_Backend.repo.ProductRepo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@Slf4j
 public class ProductServiceImplementation implements ProductService {
 
 
@@ -30,12 +32,14 @@ public class ProductServiceImplementation implements ProductService {
         Product isPresent= repo.isProductExist(req.getTitle(), req.getBrand(), req.getColor(),req.getThirdLavelCategory()).orElse(null);
 
         if (isPresent != null) {
+            log.error("Create Product Request was Sent. But product with id: {} already exist", isPresent.getId());
             throw new ProductException("Product already exist");
         }
 
         Category topLevel = categoryRepo.findByName(req.getTopLavelCategory()).orElse(null);
 
         if (topLevel == null) {
+            log.info("Category not found with name: {} and is being created", req.getTopLavelCategory());
             Category topLavelCategory = new Category();
             topLavelCategory.setName(req.getTopLavelCategory());
             topLavelCategory.setLevel(1);
@@ -47,6 +51,7 @@ public class ProductServiceImplementation implements ProductService {
         Category secondLevel = categoryRepo.findByNameAndParentName(req.getSecondLavelCategory(), topLevel.getName()).orElse(null);
 
         if (secondLevel == null) {
+            log.info("Category not found with name: {} and is being created", req.getSecondLavelCategory());
             Category secondLavelCategory = new Category();
             secondLavelCategory.setName(req.getSecondLavelCategory());
             secondLavelCategory.setLevel(2);
@@ -60,6 +65,7 @@ public class ProductServiceImplementation implements ProductService {
         Category thirdLevel = categoryRepo.findByNameAndParentName(req.getThirdLavelCategory(), secondLevel.getName()).orElse(null);
 
         if (thirdLevel == null) {
+            log.info("Category not found with name: {} and is being created", req.getThirdLavelCategory());
             Category thirdLavelCategory = new Category();
             thirdLavelCategory.setName(req.getThirdLavelCategory());
             thirdLavelCategory.setLevel(3);
@@ -83,6 +89,7 @@ public class ProductServiceImplementation implements ProductService {
         product.setQuantity(req.getQuantity());
         product.setCreatedAt(LocalDateTime.now());
         product.setDiscountPercentage(req.getDiscountPercentage());
+        log.info("Product created successfully {}",product.getId());
         return repo.save(product);
     }
 
@@ -93,6 +100,7 @@ public class ProductServiceImplementation implements ProductService {
         // delete the associated value objects
         product.getSize().clear();
         repo.delete(product);
+        log.info("Product deleted successfully with id:{}",id);
         return "Product deleted successfully";
     }
 
@@ -103,6 +111,7 @@ public class ProductServiceImplementation implements ProductService {
         //update quantity
         if (product.getQuantity() != 0) {
             existingProduct.setQuantity(product.getQuantity());
+            log.info("Product quantity updated successfully with id:{}",id);
         }
 
         return repo.save(existingProduct);
@@ -111,10 +120,17 @@ public class ProductServiceImplementation implements ProductService {
     @Override
     public Product findProductById(Long id) throws ProductException {
 
+        if(id<0){
+            log.info("Provided id:{} is negative so converting it to positive",id);
+            id = Math.abs(id);
+        }
+
         Product product = repo.findById(id).orElse(null);
         if (product != null) {
+            log.info("Product found with id:{}",id);
             return product;
         }
+        log.error("Product not found with id:{}",id);
         throw new ProductException("Product not found with id:" + id);
     }
 
@@ -145,10 +161,10 @@ public class ProductServiceImplementation implements ProductService {
      * @param pageNumber  the page number of the products to fetch
      * @param pageSize    the page size of the products to fetch
      * @return a page of products
-     * @throws ProductException if any error occurs
+
      */
     @Override
-    public Page<Product> getAllProduct(String category, List<String> colors, List<String> sizes, int minPrice, int maxPrice, int minDiscount, String sort, String stock, int pageNumber, int pageSize) throws ProductException {
+    public Page<Product> getAllProduct(String category, List<String> colors, List<String> sizes, int minPrice, int maxPrice, int minDiscount, String sort, String stock, int pageNumber, int pageSize) {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize); // used for paginated results
 
@@ -176,10 +192,8 @@ public class ProductServiceImplementation implements ProductService {
         int startIndex = (int) pageable.getOffset();
         int endIndex = Math.min(startIndex + pageable.getPageSize(), products.size());
         List<Product> pageContent = products.subList(startIndex, endIndex);
-
-        Page<Product> filteredProducts = new PageImpl<>(pageContent, pageable, products.size());
-
-        return filteredProducts;
+        log.info("Filtered Products fetched Successfully");
+        return new PageImpl<>(pageContent, pageable, products.size());
     }
 
 

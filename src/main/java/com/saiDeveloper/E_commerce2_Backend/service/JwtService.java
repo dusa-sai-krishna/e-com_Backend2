@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
+@Slf4j
 public class JwtService {
     private static final String SECRET = "TmV3U2VjcmV0S2V5Rm9ySldUU2lnbmluZ1B1cnBvc2VzMTIzNDU2Nzg=\r\n";
 
@@ -60,7 +62,11 @@ public class JwtService {
 
     public String extractEmail(String token) {
         // extract the email from jwt token
-        return extractClaim(token, Claims::getSubject);
+        log.error("Extracting email from token: {}",token);
+        String ans = extractClaim(token, Claims::getSubject);
+        log.error("Email extracted!!:{}",ans);
+        return ans;
+
     }
 
     private <T> T extractClaim(String token, Function<Claims, T> claimResolver) {

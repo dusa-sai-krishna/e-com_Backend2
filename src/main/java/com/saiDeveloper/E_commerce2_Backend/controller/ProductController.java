@@ -5,6 +5,8 @@ import com.saiDeveloper.E_commerce2_Backend.model.Product;
 import com.saiDeveloper.E_commerce2_Backend.request.createProductRequest;
 import com.saiDeveloper.E_commerce2_Backend.service.ProductService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,7 @@ import java.util.List;
 @RequestMapping("/api")
 @RestController
 @Tag(name = "Product", description = "Product APIs")
+@Slf4j
 public class ProductController {
 
     @Autowired
@@ -89,16 +92,8 @@ public class ProductController {
            @RequestParam("pageSize") Integer pageSize
     ) throws ProductException {
 
-        System.out.println(category);
-        System.out.println(color);
-        System.out.println(size);
-        System.out.println(minPrice);
-        System.out.println(maxPrice);
-        System.out.println(minDiscount);
-        System.out.println(sort);
-        System.out.println(stock);
-        System.out.println(pageNumber);
-        System.out.println(pageSize);
+        log.info("Products with following filters were requested: category:{} color:{} size:{} minPrice:{} " +
+                "maxPrice:{} minDiscount:{}  sort:{} pageNumber:{} pageSize:{} stock:{}", category, color, size, minPrice, maxPrice, minDiscount, sort, stock, pageNumber, pageSize);
 
         Page<Product> res = productService.getAllProduct(
                 category, color, size, minPrice, maxPrice,
@@ -108,14 +103,14 @@ public class ProductController {
         return new ResponseEntity<>(res, HttpStatus.ACCEPTED);
     }
 
-    @GetMapping("/products/{productId}")
+    @GetMapping("/products/id/{productId}")
     public  ResponseEntity<Product> findProductByIdHandler(@PathVariable("productId") Long productId) throws ProductException {
         Product res = productService.findProductById(productId);
         return new ResponseEntity<>(res, HttpStatus.ACCEPTED);
     }
 
    @PostMapping("/products")
-   public ResponseEntity<Product> createProductHandler(@RequestBody createProductRequest req) throws ProductException {
+   public ResponseEntity<Product> createProductHandler(@RequestBody @Valid createProductRequest req) throws ProductException {
         Product res = productService.createProduct(req);
 
         return new ResponseEntity<>(res, HttpStatus.CREATED);

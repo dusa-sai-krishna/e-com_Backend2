@@ -18,6 +18,7 @@ public interface CartItemService {
 
     public CartItem findCartItemById(Long id) throws CartItemException;
 
+    CartItem getCartItemById(Long cartItemId) throws CartItemException;
 }
 
 

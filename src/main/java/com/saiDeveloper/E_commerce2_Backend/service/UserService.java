@@ -6,6 +6,7 @@ import com.saiDeveloper.E_commerce2_Backend.exception.UserException;
 import com.saiDeveloper.E_commerce2_Backend.model.User;
 import com.saiDeveloper.E_commerce2_Backend.repo.UserRepo;
 import com.saiDeveloper.E_commerce2_Backend.response.AuthResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class UserService {
 
     @Autowired
@@ -33,6 +35,7 @@ public class UserService {
     public AuthResponse saveUser(UserRegisterRequest req) throws UserException {
 
         if(repo.findByEmail(req.getEmail()).isPresent()){
+            log.error("User already exists with email:{}", req.getEmail());
             throw new UserException("User already exists with email:"+req.getEmail());
 
         }
@@ -45,11 +48,10 @@ public class UserService {
             user.setMobile(req.getMobile());
 
             user.setPassword(encoder.encode(req.getPassword()));
-            //For verification only
-            System.out.println(user.getPassword());
             repo.save(user);
             response.setMessage("User registered successfully");
-            cartService.createCart(user);// when user is registered, create an associated cart too.
+            cartService.createCart(user);
+            log.info("User registered successfully with email:{}", req.getEmail());// when user is registered, create an associated cart too.
 
         }
         return response;
@@ -57,9 +59,10 @@ public class UserService {
 
     public AuthResponse login(UserLoginRequest req) throws UserException {
 
-        findByEmail(req.getEmail()); //throws exception if user not found
+        findByEmail(req.getEmail());
 
         try {
+            //throws exception if user not found
             Authentication authentication = manager
                     .authenticate(new UsernamePasswordAuthenticationToken(req.getEmail(),req.getPassword()));
 
@@ -72,15 +75,18 @@ public class UserService {
         }
 
 
+
         return response;
     }
 
     public User findById(Long id) throws UserException{
         User user=repo.findById(id).orElse(null);
         if(user!=null){
+            log.info("User found with id:{}",id);
             return user;
         }
         else{
+            log.error("User not found with id:{}",id);
             throw new UserException("User not found with id:"+id);
         }
     }
@@ -88,21 +94,26 @@ public class UserService {
     public User findByEmail(String email) throws UserException{
         User user=repo.findByEmail(email).orElse(null);
         if(user!=null){
+            log.info("User found with email:{}",email);
             return user;
         }
         else{
+            log.error("User not found with email:{}",email);
             throw new UserException("User not found with email:"+email);
         }
 
     }
 
     public User findByJWT(String jwt) throws UserException{
-        String email=jwtService.extractEmail(jwt);
+        log.error("Calling jwt Service to find email for jwt: {}",jwt);
+        String token = jwt.split(" ")[1];
+        String email=jwtService.extractEmail(token);
         return findByEmail(email);
     }
 
     public User updateUser(User user) throws UserException{
         if(repo.findByEmail(user.getEmail()).isPresent()){
+            log.info("User has been updated!!");
              return repo.save(user);
         }
         else{

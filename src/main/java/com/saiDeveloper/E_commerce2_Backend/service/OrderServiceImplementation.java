@@ -3,9 +3,9 @@ package com.saiDeveloper.E_commerce2_Backend.service;
 import com.saiDeveloper.E_commerce2_Backend.exception.OrderException;
 import com.saiDeveloper.E_commerce2_Backend.exception.UserException;
 import com.saiDeveloper.E_commerce2_Backend.model.*;
-import com.saiDeveloper.E_commerce2_Backend.repo.AddressRepo;
 import com.saiDeveloper.E_commerce2_Backend.repo.OrderRepo;
-import com.saiDeveloper.E_commerce2_Backend.repo.UserRepo;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class OrderServiceImplementation implements OrderService {
 
     @Autowired
@@ -28,24 +29,19 @@ public class OrderServiceImplementation implements OrderService {
     private CartServiceImplementation cartService;
 
     @Autowired
-    private ProductService productService;
-    @Autowired
     private OrderItemService orderItemService;
     @Override
-    public Order createOrder(User user, Address shippingAddress) throws UserException, OrderException {
+    public Order createOrder(User user, Address shippingAddress) throws UserException{
 
         Order order = new Order();
-
-
-
         addressService.saveAddress(shippingAddress);
         user.getAddress().add(shippingAddress);
         user = userService.updateUser(user);
 
-        Cart cart = cartService.findUserCart(user.getId());
+        Cart cart = cartService.aggregateCost(user.getId()); // calculates total cart value
         List<OrderItem> orderItems = new ArrayList<>();
 
-
+        log.info("Mapping each cartItem with a corresponding orderItem");
         for(CartItem cartItem:cart.getCartItems()){
            OrderItem orderItem = new OrderItem();
 
@@ -73,11 +69,12 @@ public class OrderServiceImplementation implements OrderService {
         order.setOrderStatus("PENDING");
         order.setTotalItems(cart.getTotalItems());
         order.setCreatedAt(LocalDateTime.now());
-
+        log.info("Order object for user {} has been created successfully",user.getId());
         // Let's add order attribute to each orderItem and save thhem to Db
         for(OrderItem orderItem:order.getOrderItems()){
             orderItem.setOrder(order);
             orderItemService.createOrderItem(orderItem);
+            log.info("OrderItem object collection for order {} has been created successfully",order.getId());
         }
 
         return repo.save(order);
@@ -89,13 +86,16 @@ public class OrderServiceImplementation implements OrderService {
     public Order findById(Long orderId) throws OrderException {
         Order order = repo.findById(orderId).orElse(null);
         if (order != null) {
+            log.info("Order found with id:{}", orderId);
             return order;
         }
+        log.info("Order not found with id:{}", orderId);
         throw new OrderException("Order not found with id:" + orderId);
     }
 
     @Override
     public List<Order> usersOrderHistory(Long userId) {
+        log.info("Getting all orders for user with id:{}",userId);
         return repo.getAllOrdersByUserId(userId);
     }
 
@@ -103,8 +103,9 @@ public class OrderServiceImplementation implements OrderService {
     public Order placedOrder(Long orderId) throws OrderException {
         Order order = findById(orderId);
         order.setOrderStatus("PLACED");
-    order.getPaymentDetails().setStatus("COMPLETED");
 
+    order.getPaymentDetails().setStatus("COMPLETED");
+        log.info("Order placed and payment completed with id:{}",orderId);
         return repo.save(order);
 
     }
@@ -113,6 +114,7 @@ public class OrderServiceImplementation implements OrderService {
     public Order confirmedOrder(Long orderId) throws OrderException {
         Order order = findById(orderId);
         order.setOrderStatus("CONFIRMED");
+        log.info("Order confirmed with id:{}",orderId);
         return repo.save(order);
     }
 
@@ -120,6 +122,7 @@ public class OrderServiceImplementation implements OrderService {
     public Order shippedOrder(Long orderId) throws OrderException {
         Order order = findById(orderId);
         order.setOrderStatus("SHIPPED");
+        log.info("Order shipped with id:{}",orderId);
         return repo.save(order);
     }
 
@@ -127,6 +130,7 @@ public class OrderServiceImplementation implements OrderService {
     public Order deliveredOrder(Long orderId) throws OrderException {
         Order order = findById(orderId);
         order.setOrderStatus("DELIVERED");
+        log.info("Order delivered with id:{}",orderId);
         return repo.save(order);
     }
 
@@ -134,17 +138,20 @@ public class OrderServiceImplementation implements OrderService {
     public Order canceledOrder(Long orderId) throws OrderException {
         Order order = findById(orderId);
         order.setOrderStatus("CANCELLED");
+        log.info("Order cancelled with id:{}",orderId);
         return repo.save(order);
     }
 
     @Override
     public List<Order> getAllOrders() {
+        log.info("Getting all orders");
         return repo.findAll();
     }
 
     @Override
     public void deleteOrder(Long orderId) throws OrderException {
-        Order order = findById(orderId);
+        findById(orderId);
+        log.info("Order deleted with id:{}",orderId);
         repo.deleteById(orderId);
     }
 }
