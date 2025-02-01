@@ -33,36 +33,27 @@ public class OrderServiceImplementation implements OrderService {
     @Override
     public Order createOrder(User user, Address shippingAddress) throws UserException{
 
-        Order order = new Order();
-        addressService.saveAddress(shippingAddress);
-        user.getAddress().add(shippingAddress);
-        user = userService.updateUser(user);
-
-        Cart cart = cartService.aggregateCost(user.getId()); // calculates total cart value
-        List<OrderItem> orderItems = new ArrayList<>();
-
-        log.info("Mapping each cartItem with a corresponding orderItem");
-        for(CartItem cartItem:cart.getCartItems()){
-           OrderItem orderItem = new OrderItem();
-
-           orderItem.setOrder(order);
-           orderItem.setProduct(cartItem.getProduct());
-           orderItem.setSize(cartItem.getSize());
-            orderItem.setQuantity(cartItem.getQuantity());
-            orderItem.setPrice(cartItem.getPrice());
-            orderItem.setDiscountedPrice(cartItem.getDiscountedPrice());
-            orderItem.setUserId(user.getId());
-
-            orderItems.add(orderItem);
-            // These can be saved to Db only after adding order attribute
+        shippingAddress.setUser(user);
+        if(!addressService.isExists(shippingAddress.getStreetAddress(),shippingAddress.getZipCode())) {
+            log.info("Adding shipping address to user");
+            user.getAddress().add(shippingAddress);
+            user = userService.updateUser(user);
+            addressService.saveAddress(shippingAddress);
         }
+        else log.info("Shipping address already exists for user");
+
+        Order order = new Order();
+//create and save order then, add saved orderItems to it
+        Cart cart = cartService.aggregateCost(user.getId()); // calculates total cart value
 
         order.setUser(user);
-        order.setOrderItems(orderItems);
         order.setOrderDate(LocalDateTime.now());
 //        order.setDeliveryDate(LocalDateTime.now());
         order.setShippingAddress(shippingAddress);
+
+        order.setPaymentDetails(new PaymentDetails());
         order.getPaymentDetails().setStatus("PENDING");
+
         order.setTotalPrice(cart.getTotalPrice());
         order.setTotalDiscountedPrice(cart.getTotalDiscountedPrice());
         order.setDiscount(cart.getDiscount());
@@ -71,14 +62,33 @@ public class OrderServiceImplementation implements OrderService {
         order.setCreatedAt(LocalDateTime.now());
         log.info("Order object for user {} has been created successfully",user.getId());
         // Let's add order attribute to each orderItem and save thhem to Db
-        for(OrderItem orderItem:order.getOrderItems()){
-            orderItem.setOrder(order);
-            orderItemService.createOrderItem(orderItem);
-            log.info("OrderItem object collection for order {} has been created successfully",order.getId());
+
+
+        Order savedOrder = repo.save(order);
+        List<OrderItem> orderItems = new ArrayList<>();
+
+        log.info("Mapping each cartItem with a corresponding orderItem");
+        for(CartItem cartItem:cart.getCartItems()) {
+            OrderItem orderItem = new OrderItem();
+
+            orderItem.setOrder(savedOrder);
+            orderItem.setProduct(cartItem.getProduct());
+            orderItem.setSize(cartItem.getSize());
+            orderItem.setQuantity(cartItem.getQuantity());
+            orderItem.setPrice(cartItem.getPrice());
+            orderItem.setDiscountedPrice(cartItem.getDiscountedPrice());
+            orderItem.setUserId(user.getId());
+
+            orderItems.add(orderItemService.createOrderItem(orderItem));
         }
 
-        return repo.save(order);
+        savedOrder.setOrderItems(orderItems);
 
+        savedOrder = repo.save(savedOrder);
+
+        log.info("OrderItem object collection for order {} has been created successfully",savedOrder.getId());
+
+        return savedOrder;
 
     }
 
@@ -153,5 +163,10 @@ public class OrderServiceImplementation implements OrderService {
         findById(orderId);
         log.info("Order deleted with id:{}",orderId);
         repo.deleteById(orderId);
+    }
+
+    @Override
+    public List<Order> findAll() {
+        return repo.findAll();
     }
 }

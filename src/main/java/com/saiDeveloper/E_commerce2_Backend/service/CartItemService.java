@@ -8,7 +8,7 @@ import com.saiDeveloper.E_commerce2_Backend.model.Product;
 
 public interface CartItemService {
 
-    public CartItem createCartItem(CartItem cartItem);
+    public CartItem createCartItem(CartItem cartItem) throws CartItemException;
 
     public CartItem updateCartItem(Long userId, Long id, CartItem cartItem)throws UserException, CartItemException;
 

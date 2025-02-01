@@ -5,7 +5,6 @@ import com.saiDeveloper.E_commerce2_Backend.exception.UserException;
 import com.saiDeveloper.E_commerce2_Backend.model.Cart;
 import com.saiDeveloper.E_commerce2_Backend.model.CartItem;
 import com.saiDeveloper.E_commerce2_Backend.model.Product;
-import com.saiDeveloper.E_commerce2_Backend.model.User;
 import com.saiDeveloper.E_commerce2_Backend.repo.CartItemRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +17,7 @@ public class CartItemServiceImplementation implements CartItemService {
     @Autowired
     CartItemRepo repo;
 
-    @Autowired
-    private UserService userService;
+
 
     @Override
     public CartItem createCartItem(CartItem cartItem) {
@@ -29,19 +27,18 @@ public class CartItemServiceImplementation implements CartItemService {
         }//by default cartItem quantity is 1
         cartItem.setPrice(cartItem.getProduct().getPrice() * cartItem.getQuantity());
         cartItem.setDiscountedPrice(cartItem.getProduct().getDiscountedPrice() * cartItem.getQuantity());
-        log.info("Cart item  created successfully {}", cartItem);
         return repo.save(cartItem);
     }
 
     @Override
-    public CartItem updateCartItem(Long userId, Long id, CartItem cartItem) throws UserException, CartItemException {
+    public CartItem updateCartItem(Long userId, Long id, CartItem cartItem) throws CartItemException {
 
         CartItem existingCartItem = findCartItemById(id);
 
-        User orderedUser = userService.findById(existingCartItem.getUserId());
+
 
         // user can only update the quantity, then price and discounted Price are automatically updated
-        if (orderedUser.getId().equals(userId)) {
+        if (existingCartItem.getUserId().equals(userId)) {
             log.info("Cart item with id:{} updation started", id);
             existingCartItem.setQuantity(cartItem.getQuantity());
             existingCartItem.setPrice(existingCartItem.getPrice() * existingCartItem.getQuantity());
@@ -65,12 +62,13 @@ public class CartItemServiceImplementation implements CartItemService {
     @Override
     public void removeCartItem(Long userId, Long id) throws CartItemException, UserException {
         CartItem cartItem = findCartItemById(id);
-
-        User user = userService.findById(cartItem.getUserId());
-
-        if (user.getId().equals(userId)) {
+        if (cartItem.getUserId().equals(userId)) {
+            //delete from cart
+            Cart cart = cartItem.getCart();
+            cart.getCartItems().remove(cartItem);
+          repo.deleteById(id);
             log.info("Cart item with id:{} deleted successfully", id);
-            repo.deleteById(id);
+
         } else {
             log.info("You can't remove other Users Cart items");
             throw new UserException("You can't remove other Users items");

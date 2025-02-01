@@ -25,6 +25,8 @@ public interface CartItemRepo extends JpaRepository<CartItem,Long> {
             @Param("userId") Long userId
             );
 
+
+
 }
 
 

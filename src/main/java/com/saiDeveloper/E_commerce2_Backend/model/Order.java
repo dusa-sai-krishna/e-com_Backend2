@@ -1,17 +1,16 @@
 package com.saiDeveloper.E_commerce2_Backend.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.context.annotation.Scope;
-import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "orders") // order is a reserved keyword in SQL. Can't be a table name
@@ -31,6 +30,7 @@ public class Order {
 
     @OneToMany
     @PrimaryKeyJoinColumn(name = "order_items")
+    @ToString.Exclude
     private List<OrderItem> orderItems = new ArrayList<>();
 
     @Column(name = "order_date")

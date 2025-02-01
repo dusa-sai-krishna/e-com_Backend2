@@ -8,6 +8,7 @@ import com.saiDeveloper.E_commerce2_Backend.model.User;
 import com.saiDeveloper.E_commerce2_Backend.service.OrderService;
 import com.saiDeveloper.E_commerce2_Backend.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class OrderController {
 
     @PostMapping("/")
     public ResponseEntity<Order> createOrder(
-            @RequestBody Address shippingAddress,
+            @RequestBody @Valid Address shippingAddress,
             @RequestHeader("Authorization") String jwt) throws UserException, OrderException {
         User user=userService.findByJWT(jwt);
         Order order = service.createOrder(user,shippingAddress);
@@ -48,6 +49,13 @@ public class OrderController {
     public ResponseEntity<Order> findById(@PathVariable("orderId") Long orderId) throws OrderException {
         Order order = service.findById(orderId);
         return new ResponseEntity<Order>(order, HttpStatus.CREATED);
+    }
+
+    //getall orders
+    @GetMapping("/all")
+    public ResponseEntity<List<Order>> findAll() throws OrderException {
+        List<Order> orders = service.findAll();
+        return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
 

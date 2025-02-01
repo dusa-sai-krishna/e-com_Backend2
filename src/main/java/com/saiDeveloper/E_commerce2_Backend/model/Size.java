@@ -1,8 +1,10 @@
 package com.saiDeveloper.E_commerce2_Backend.model;
 
 import jakarta.persistence.Embeddable;
+import org.springframework.context.annotation.Scope;
 
 @Embeddable
+@Scope("prototype")
 public class Size {
 
     private String name;

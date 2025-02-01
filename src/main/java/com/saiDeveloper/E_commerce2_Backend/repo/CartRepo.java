@@ -13,5 +13,9 @@ public interface CartRepo extends JpaRepository<Cart,Long> {
 
 
     @Query("Select c From Cart c Where c.user.id = :userId")
-    public Optional<Cart> findByUserId(@Param("userId") Long userId);
+     Optional<Cart> findByUserId(@Param("userId") Long userId);
+
+
+
+
 }

@@ -1,16 +1,16 @@
 package com.saiDeveloper.E_commerce2_Backend.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.context.annotation.Scope;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "cart")
@@ -27,7 +27,8 @@ public class Cart {
 
     @OneToMany(mappedBy = "cart",cascade = CascadeType.ALL,orphanRemoval = true)
     @Column(name = "cart_items")
-    private Set<CartItem> cartItems = new HashSet<>();
+    @ToString.Exclude
+    private List<CartItem> cartItems = new ArrayList<>();
 
     @Column(name = "total_price")
     private Integer totalPrice;

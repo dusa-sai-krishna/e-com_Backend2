@@ -56,8 +56,8 @@ public class CartServiceImplementation implements CartService{
                 cartItem.setQuantity(req.getQuantity());
                 cartItem.setUserId(userId);
 
-                cartItemService.createCartItem(cartItem);
-                cart.getCartItems().add(cartItem);
+                CartItem updatedCartitem = cartItemService.createCartItem(cartItem);
+                cart.getCartItems().add(updatedCartitem);
 
                 repo.save(cart);
                 log.info("Item added to cart successfully");
