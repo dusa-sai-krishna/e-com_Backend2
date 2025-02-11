@@ -30,22 +30,21 @@ public class CartItemServiceImplementation implements CartItemService {
         return repo.save(cartItem);
     }
 
+
     @Override
-    public CartItem updateCartItem(Long userId, Long id, CartItem cartItem) throws CartItemException {
+    public CartItem updateCartItem(Long userId, Long cartItemId, Integer quantity) throws CartItemException {
 
-        CartItem existingCartItem = findCartItemById(id);
-
-
+        CartItem existingCartItem = findCartItemById(cartItemId);
 
         // user can only update the quantity, then price and discounted Price are automatically updated
         if (existingCartItem.getUserId().equals(userId)) {
-            log.info("Cart item with id:{} updation started", id);
-            existingCartItem.setQuantity(cartItem.getQuantity());
-            existingCartItem.setPrice(existingCartItem.getPrice() * existingCartItem.getQuantity());
-            existingCartItem.setDiscountedPrice(existingCartItem.getDiscountedPrice() * existingCartItem.getQuantity());
+            log.info("Cart item with id:{} updation started", cartItemId);
+            existingCartItem.setQuantity(quantity);
+            existingCartItem.setPrice(existingCartItem.getProduct().getPrice() * existingCartItem.getQuantity());
+            existingCartItem.setDiscountedPrice(existingCartItem.getProduct().getDiscountedPrice() * existingCartItem.getQuantity());
         }
 
-        return repo.save(cartItem);
+        return repo.save(existingCartItem);
     }
 
     //Primarily used to check whether a cartItem exists, then changes can be updated if not new cartItem is created!

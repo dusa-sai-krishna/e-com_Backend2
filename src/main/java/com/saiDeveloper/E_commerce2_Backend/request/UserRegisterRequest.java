@@ -2,6 +2,7 @@ package com.saiDeveloper.E_commerce2_Backend.request;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,15 +12,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserRegisterRequest {
 
-    @NotEmpty(message = "First name is required")
+    @Size(min=3, max =50, message = "First name must be between 3 and 50 characters")
     private String firstName;
     private String lastName;
-    @NotEmpty
     @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "Invalid email format")
     private String email;
-    @NotEmpty
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$", message = "Ensure your password contains at least 8 characters, including one uppercase letter, one lowercase letter, one digit, and one special character, with no spaces")
     private String password;
-    @NotEmpty
     @Pattern(regexp = "^[0-9]{10}$", message = "Invalid mobile number format")
     private String mobile;
 }

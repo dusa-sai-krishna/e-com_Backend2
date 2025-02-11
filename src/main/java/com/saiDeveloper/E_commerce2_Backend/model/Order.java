@@ -39,8 +39,8 @@ public class Order {
     @Column(name = "delivery_date")
     private LocalDateTime deliveryDate;
 
-    @OneToOne
-    @PrimaryKeyJoinColumn(name = "shipping_address")
+    @OneToOne()
+    @JoinColumn(name = "address_id")
     private Address shippingAddress;
 
     @Embedded

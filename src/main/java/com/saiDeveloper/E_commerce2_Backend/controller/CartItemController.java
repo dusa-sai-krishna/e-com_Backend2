@@ -4,10 +4,11 @@ import com.saiDeveloper.E_commerce2_Backend.exception.CartException;
 import com.saiDeveloper.E_commerce2_Backend.exception.CartItemException;
 import com.saiDeveloper.E_commerce2_Backend.exception.ProductException;
 import com.saiDeveloper.E_commerce2_Backend.exception.UserException;
+import com.saiDeveloper.E_commerce2_Backend.model.Cart;
 import com.saiDeveloper.E_commerce2_Backend.model.CartItem;
 import com.saiDeveloper.E_commerce2_Backend.model.User;
 import com.saiDeveloper.E_commerce2_Backend.request.AddItemRequest;
-import com.saiDeveloper.E_commerce2_Backend.response.ApiResponse;
+import com.saiDeveloper.E_commerce2_Backend.request.UpdateCartItemQuantityRequest;
 import com.saiDeveloper.E_commerce2_Backend.service.CartItemService;
 import com.saiDeveloper.E_commerce2_Backend.service.CartService;
 import com.saiDeveloper.E_commerce2_Backend.service.UserService;
@@ -42,38 +43,41 @@ public class CartItemController {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Cart item not found")
             }
     )
-    public ResponseEntity<ApiResponse> deleteCartItem(
+    public ResponseEntity<Long> deleteCartItem(
             @PathVariable Long cartItemId,
             @RequestHeader("Authorization") String jwt) throws UserException, CartItemException {
         User user = userService.findByJWT(jwt);
         cartItemService.removeCartItem(user.getId(), cartItemId);
-
-        ApiResponse response = new ApiResponse();
-        response.setMessage("Cart item deleted successfully");
-        response.setStatus(true);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(cartItemId, HttpStatus.OK);
     }
 
 
     @PutMapping("/add")
     @Operation(summary = "Add item to cart", description = "Add an item to the cart")
-    public ResponseEntity<ApiResponse> addItemToCart(@Valid  @RequestBody AddItemRequest req, @RequestHeader("Authorization") String jwt) throws UserException, ProductException, CartItemException, CartException {
+    public ResponseEntity<Cart> addItemToCart(@Valid  @RequestBody AddItemRequest req, @RequestHeader("Authorization") String jwt) throws UserException, ProductException, CartItemException, CartException {
 
        log.info("Request to add a cart Item received with AddItemRequest:{}",req);
 
         User user = userService.findByJWT(jwt);
-
-        String res = cartService.addCartItem(user.getId(), req);
-        ApiResponse response = new ApiResponse();
-        response.setMessage(res);
-        response.setStatus(true);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        Cart cart= cartService.addCartItem(user.getId(), req);
+        return new ResponseEntity<>(cart, HttpStatus.OK);
     }
 
     @GetMapping("/id/{cartItemId}")
     public ResponseEntity<CartItem> getCartItemById(@PathVariable("cartItemId") Long cartItemId) throws CartItemException {
     return new ResponseEntity<>(cartItemService.getCartItemById(cartItemId), HttpStatus.OK);
 }
+
+
+    @PutMapping("/")
+    public ResponseEntity<CartItem> updateCartItemQuantity(@RequestBody @Valid UpdateCartItemQuantityRequest req,
+                                                           @RequestHeader("Authorization") String jwt
+                                                            ) throws UserException, CartItemException {
+        User user = userService.findByJWT(jwt);
+        return new ResponseEntity<>(cartItemService.updateCartItem(user.getId(),req.getCartItemId(),req.getQuantity())
+        ,HttpStatus.OK);
+    }
+
 
 }
 

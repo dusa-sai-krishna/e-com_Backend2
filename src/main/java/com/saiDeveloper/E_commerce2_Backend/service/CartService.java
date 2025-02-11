@@ -12,7 +12,7 @@ public interface CartService {
 
     Cart createCart(User user);
 
-    String addCartItem(Long userId, AddItemRequest req) throws ProductException, CartItemException, CartException;
+    Cart addCartItem(Long userId, AddItemRequest req) throws ProductException, CartItemException, CartException;
 
     Cart findCartByUserId(Long userId) throws CartException;
 

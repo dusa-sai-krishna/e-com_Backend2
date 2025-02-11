@@ -4,6 +4,7 @@ package com.saiDeveloper.E_commerce2_Backend.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.context.annotation.Scope;
@@ -32,9 +33,14 @@ public class Address {
     private String state;
     @Size(min=5, max =10, message = "Zip code must be between 5 and 10 characters")
     private String zipCode;
+    @Pattern(regexp = "^[0-9]{10}$", message = "Invalid phone number format")
+    @NotNull(message = "Phone Number can't be empty!!")
+    private String phoneNumber;
 
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+
 }

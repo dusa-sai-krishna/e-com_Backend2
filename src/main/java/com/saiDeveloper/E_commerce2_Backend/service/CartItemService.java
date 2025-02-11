@@ -8,15 +8,16 @@ import com.saiDeveloper.E_commerce2_Backend.model.Product;
 
 public interface CartItemService {
 
-    public CartItem createCartItem(CartItem cartItem) throws CartItemException;
+     CartItem createCartItem(CartItem cartItem) throws CartItemException;
 
-    public CartItem updateCartItem(Long userId, Long id, CartItem cartItem)throws UserException, CartItemException;
 
-    public CartItem isCartItemExist(Cart cart, Product product, String size, Long userId);
+    CartItem updateCartItem(Long userId, Long cartItemId, Integer quantity) throws CartItemException;
 
-    public void removeCartItem(Long userId, Long id) throws CartItemException,UserException;
+     CartItem isCartItemExist(Cart cart, Product product, String size, Long userId);
 
-    public CartItem findCartItemById(Long id) throws CartItemException;
+     void removeCartItem(Long userId, Long id) throws CartItemException,UserException;
+
+     CartItem findCartItemById(Long id) throws CartItemException;
 
     CartItem getCartItemById(Long cartItemId) throws CartItemException;
 }

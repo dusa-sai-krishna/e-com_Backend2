@@ -2,7 +2,6 @@ package com.saiDeveloper.E_commerce2_Backend.controller;
 
 import com.saiDeveloper.E_commerce2_Backend.exception.OrderException;
 import com.saiDeveloper.E_commerce2_Backend.model.Order;
-import com.saiDeveloper.E_commerce2_Backend.response.ApiResponse;
 import com.saiDeveloper.E_commerce2_Backend.service.OrderService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,14 +59,11 @@ public class AdminOrderController {
     }
 
     @DeleteMapping("/{orderId}/delete")
-    public ResponseEntity<ApiResponse> DeleteOrderHandler(
+    public ResponseEntity<Long> DeleteOrderHandler(
             @PathVariable("orderId") Long orderId
     ) throws OrderException {
         orderService.deleteOrder(orderId);
-        ApiResponse res = new ApiResponse();
-        res.setMessage("Order deleted successfully");
-        res.setStatus(true);
-        return new ResponseEntity<>(res, HttpStatus.OK);
+        return new ResponseEntity<>(orderId, HttpStatus.OK);
     }
 
 }

@@ -36,7 +36,7 @@ public class CartServiceImplementation implements CartService{
 
 
     @Override
-    public String addCartItem(Long userId, AddItemRequest req) throws ProductException, CartException, CartItemException {
+    public Cart addCartItem(Long userId, AddItemRequest req) throws ProductException, CartException, CartItemException {
 
         Cart cart = repo.findByUserId(userId).orElse(null);
         if(cart!=null){
@@ -59,9 +59,9 @@ public class CartServiceImplementation implements CartService{
                 CartItem updatedCartitem = cartItemService.createCartItem(cartItem);
                 cart.getCartItems().add(updatedCartitem);
 
-                repo.save(cart);
+
                 log.info("Item added to cart successfully");
-                return "Item added to cart successfully";
+               return repo.save(cart);
             }
             else {
                 log.error("Item already exists in cart");
@@ -90,7 +90,8 @@ public class CartServiceImplementation implements CartService{
 
         if(cart!=null){
             log.info("Cart found with user id:{} and cart:{}",userId,cart);
-            return cart;
+
+            return aggregateCost(cart.getUser().getId());
         }
         log.error("Cart not found with user id:{}",userId);
             throw new CartException("Cart not found with user id:"+userId);
