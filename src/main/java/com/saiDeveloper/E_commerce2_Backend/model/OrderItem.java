@@ -3,6 +3,8 @@ package com.saiDeveloper.E_commerce2_Backend.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.context.annotation.Scope;
 
 import java.time.LocalDateTime;
@@ -30,6 +32,7 @@ public class OrderItem {
     //There can be many order items each with a color or size variation of a product.
     @ManyToOne
     @JoinColumn(name = "product_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Product product;
 
     private String size;

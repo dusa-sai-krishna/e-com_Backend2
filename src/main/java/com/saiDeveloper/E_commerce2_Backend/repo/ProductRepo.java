@@ -14,15 +14,15 @@ import java.util.Set;
 @Repository
 public interface ProductRepo extends JpaRepository<Product, Long> {
 
-
     @Query("SELECT p FROM Product p " +
-            "WHERE (:category IS NULL OR p.category.name = :category) " +
-            "AND (:minPrice IS NULL OR p.discountedPrice >= :minPrice) "+
-            "AND (:maxPrice IS NULL OR p.discountedPrice <= :maxPrice) " +
-            "AND (:minDiscount IS NULL OR p.discountPercentage >= :minDiscount) " +
+            "WHERE (:category IS  NULL OR p.category.name = :category) " +
+            "AND (p.discountedPrice >= :minPrice) " +
+            "AND ( p.discountedPrice <= :maxPrice) " +
+            "AND ( p.discountPercentage >= :minDiscount) " +
             "ORDER BY " +
             "CASE WHEN :sort = 'price_low' THEN p.discountedPrice END ASC, " +
             "CASE WHEN :sort = 'price_high' THEN p.discountedPrice END DESC")
+
 
     List<Product> filterProducts(@Param("category") String category,
                                         @Param("minPrice") Integer minPrice,

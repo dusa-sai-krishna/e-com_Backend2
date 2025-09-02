@@ -1,8 +1,12 @@
 package com.saiDeveloper.E_commerce2_Backend.controller;
 
+import com.saiDeveloper.E_commerce2_Backend.exception.CartItemException;
+import com.saiDeveloper.E_commerce2_Backend.exception.OrderItemException;
 import com.saiDeveloper.E_commerce2_Backend.exception.ProductException;
+import com.saiDeveloper.E_commerce2_Backend.exception.UserException;
 import com.saiDeveloper.E_commerce2_Backend.model.Product;
 import com.saiDeveloper.E_commerce2_Backend.request.createProductRequest;
+import com.saiDeveloper.E_commerce2_Backend.response.ApiResponse;
 import com.saiDeveloper.E_commerce2_Backend.service.ProductService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -109,11 +113,20 @@ public class ProductController {
         return new ResponseEntity<>(res, HttpStatus.ACCEPTED);
     }
 
-   @PostMapping("/products")
+   @PostMapping("/admin/products")
    public ResponseEntity<Product> createProductHandler(@RequestBody @Valid createProductRequest req) throws ProductException {
         Product res = productService.createProduct(req);
 
         return new ResponseEntity<>(res, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/admin/products/id/{productId}")
+    public ResponseEntity<ApiResponse> deleteProductHandler(@PathVariable("productId") Long productId) throws ProductException, CartItemException, OrderItemException, UserException {
+        productService.deleteProduct(productId);
+        ApiResponse res = new ApiResponse();
+        res.setMessage("Product deleted successfully");
+        res.setStatus(true);
+        return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
 

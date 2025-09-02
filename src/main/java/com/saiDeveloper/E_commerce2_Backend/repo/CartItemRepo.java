@@ -5,10 +5,12 @@ import com.saiDeveloper.E_commerce2_Backend.model.CartItem;
 import com.saiDeveloper.E_commerce2_Backend.model.Product;
 import com.saiDeveloper.E_commerce2_Backend.model.Size;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -26,7 +28,12 @@ public interface CartItemRepo extends JpaRepository<CartItem,Long> {
             );
 
 
+    @Modifying
+    @Query("Delete From CartItem ci Where ci.product.id = :id")
+    void deleteByProductId(Long id);
 
+    @Query("Select ci From CartItem ci Where ci.product.id = :id")
+    List<CartItem> findByProductId(Long id);
 }
 
 

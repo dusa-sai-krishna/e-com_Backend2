@@ -1,10 +1,18 @@
 package com.saiDeveloper.E_commerce2_Backend.service;
+import com.saiDeveloper.E_commerce2_Backend.exception.CartItemException;
+import com.saiDeveloper.E_commerce2_Backend.exception.OrderItemException;
+import com.saiDeveloper.E_commerce2_Backend.exception.UserException;
+import com.saiDeveloper.E_commerce2_Backend.model.CartItem;
+import com.saiDeveloper.E_commerce2_Backend.model.OrderItem;
+import com.saiDeveloper.E_commerce2_Backend.repo.CartItemRepo;
+import com.saiDeveloper.E_commerce2_Backend.repo.OrderItemRepo;
 import com.saiDeveloper.E_commerce2_Backend.request.createProductRequest;
 import com.saiDeveloper.E_commerce2_Backend.exception.ProductException;
 import com.saiDeveloper.E_commerce2_Backend.model.Category;
 import com.saiDeveloper.E_commerce2_Backend.model.Product;
 import com.saiDeveloper.E_commerce2_Backend.repo.CategoryRepo;
 import com.saiDeveloper.E_commerce2_Backend.repo.ProductRepo;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,6 +33,18 @@ public class ProductServiceImplementation implements ProductService {
 
     @Autowired
     private CategoryRepo categoryRepo;
+
+   @Autowired
+   private OrderItemService orderItemService;
+
+   @Autowired
+   private CartItemService cartItemService;
+
+   @Autowired
+   private OrderItemRepo orderItemRepo;
+
+   @Autowired
+   private CartItemRepo cartItemRepo;
 
     @Override
     public Product createProduct(createProductRequest req) throws ProductException {
@@ -94,11 +114,25 @@ public class ProductServiceImplementation implements ProductService {
     }
 
 
+    @Transactional
     @Override
-    public String deleteProduct(Long id) throws ProductException {
+    public String deleteProduct(Long id) throws ProductException, OrderItemException, CartItemException, UserException {
         Product product = findProductById(id); // if not found throws exception
         // delete the associated value objects
         product.getSize().clear();
+
+        //delete orderItem from their orders
+        for(OrderItem orderItem : orderItemRepo.findByProductId(id)){
+            orderItemService.deleteOrderItem(orderItem.getId());
+        }
+
+        //delete cartItem from their carts
+        for(CartItem cartItem : cartItemRepo.findByProductId(id)){
+            cartItemService.removeCartItem( cartItem.getUserId(),cartItem.getId());
+        }
+
+
+        //delete cartItem and orderItem which references product
         repo.delete(product);
         log.info("Product deleted successfully with id:{}",id);
         return "Product deleted successfully";
@@ -164,7 +198,7 @@ public class ProductServiceImplementation implements ProductService {
 
      */
     @Override
-    public Page<Product> getAllProduct(String category, List<String> colors, List<String> sizes, int minPrice, int maxPrice, int minDiscount, String sort, String stock, int pageNumber, int pageSize) {
+    public Page<Product> getAllProduct(String category, List<String> colors, List<String> sizes, Integer minPrice, Integer maxPrice, Integer minDiscount, String sort, String stock, int pageNumber, int pageSize) {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize); // used for paginated results
 
@@ -195,6 +229,7 @@ public class ProductServiceImplementation implements ProductService {
         log.info("Filtered Products fetched Successfully");
         return new PageImpl<>(pageContent, pageable, products.size());
     }
+
 
 
 

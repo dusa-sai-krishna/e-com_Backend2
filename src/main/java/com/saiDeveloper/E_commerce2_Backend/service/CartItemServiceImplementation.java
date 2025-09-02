@@ -6,6 +6,7 @@ import com.saiDeveloper.E_commerce2_Backend.model.Cart;
 import com.saiDeveloper.E_commerce2_Backend.model.CartItem;
 import com.saiDeveloper.E_commerce2_Backend.model.Product;
 import com.saiDeveloper.E_commerce2_Backend.repo.CartItemRepo;
+import com.saiDeveloper.E_commerce2_Backend.repo.CartRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,8 @@ public class CartItemServiceImplementation implements CartItemService {
     @Autowired
     CartItemRepo repo;
 
-
+    @Autowired
+    CartRepo cartRepo;
 
     @Override
     public CartItem createCartItem(CartItem cartItem) {
@@ -65,6 +67,7 @@ public class CartItemServiceImplementation implements CartItemService {
             //delete from cart
             Cart cart = cartItem.getCart();
             cart.getCartItems().remove(cartItem);
+            cartRepo.save(cart);
           repo.deleteById(id);
             log.info("Cart item with id:{} deleted successfully", id);
 
