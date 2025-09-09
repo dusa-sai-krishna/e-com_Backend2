@@ -31,7 +31,7 @@
 - **AOP**: Spring AOP for cross-cutting concerns
 - **Build Tool**: Maven
 
-### Frontend (Client)
+### Frontend (Client) (Suggestions)
 - **Framework**: React.js
 - **State Management**: Redux Toolkit
 - **Styling**: Tailwind CSS
